@@ -1,3 +1,6 @@
+# ====================
+# IMPORTAÇÕES
+# ====================
 import pygame
 from pygame.locals import *
 from sys import exit
@@ -13,6 +16,7 @@ pygame.init()
 tela_lar, tela_alt = 1366, 768
 tela = pygame.display.set_mode((tela_lar, tela_alt))
 
+# Tempo do jogo
 clock = pygame.time.Clock()
 
 # ===== Nome da janela =====
@@ -22,10 +26,11 @@ pygame.display.set_caption("FaunaBR")
 # TILES
 # ====================
 
-TILE_SIZE = 128
+TILE_SIZE = 128 # Tamanho do tile
 
 # Carregamento dos tiles
 tiles = [
+    # Mata Atlântica
     pygame.transform.scale(pygame.image.load('images/mata_atlantica/ma_piso1.png'), (TILE_SIZE, TILE_SIZE)),
     pygame.transform.scale(pygame.image.load('images/mata_atlantica/ma_piso2.png'), (TILE_SIZE, TILE_SIZE)),
     pygame.transform.scale(pygame.image.load('images/mata_atlantica/ma_piso3.png'), (TILE_SIZE, TILE_SIZE)),
@@ -40,8 +45,8 @@ tiles = [
 # MAPA
 # ====================
 
-MAPA_COLUNAS = 50
-MAPA_LINHAS = 50
+# Tamanho do mapa
+MAPA_COLUNAS, MAPA_LINHAS = 50, 50
 
 mapa_lar = MAPA_COLUNAS * TILE_SIZE
 mapa_alt = MAPA_LINHAS * TILE_SIZE
@@ -57,8 +62,8 @@ for linha in range(MAPA_LINHAS):
 
         # Escolhe um tile aleatório
         tile = random.choices(
-            population=[0,1,2,3,4,5,6,7],
-            weights=[1,1,1,12,1,1,12,1],
+            population=[0,1,2,3,4,5,6,7], # Tiles existentes
+            weights=[1,1,1,12,1,1,12,1], # Peso de cada tile
             k=1
         )[0]
 
@@ -71,7 +76,7 @@ for linha in range(MAPA_LINHAS):
 # ====================
 
 player = pygame.transform.scale(
-    pygame.image.load('images/pombo_frente1.png'),
+    pygame.image.load('images/personagens/pombo/pombo_frente1.png'),
     (96, 96)
 )
 
@@ -100,15 +105,19 @@ while True:
 
     teclas = pygame.key.get_pressed()
 
+    # Subir
     if teclas[K_w] or teclas[K_UP]:
         player_y -= velocidade
 
+    # Descer
     if teclas[K_s] or teclas[K_DOWN]:
         player_y += velocidade
 
+    # Esquerda
     if teclas[K_a] or teclas[K_LEFT]:
         player_x -= velocidade
-
+    
+    # Direita
     if teclas[K_d] or teclas[K_RIGHT]:
         player_x += velocidade
 
