@@ -49,13 +49,20 @@ mapa_alt = MAPA_LINHAS * TILE_SIZE
 
 mapa = gerar_mapa(MAPA_COLUNAS, MAPA_LINHAS)
 
+# ======= CASA =======
+casa_img = pygame.transform.scale(pygame.image.load("assets/images/construcoes/casa.png").convert_alpha(), (512, 512))
+casa_x = mapa_lar // 2 + 200
+casa_y = mapa_alt // 2
+
+casa_rect = pygame.Rect(casa_x, casa_y, 512, 512)
+
 # ====================
 # JOGADOR
 # ====================
 
 player = Jogador()
 player.x = mapa_lar // 2
-player.y = mapa_alt //2
+player.y = mapa_alt // 2
 
 # ====================
 # LOOP PRINCIPAL
@@ -79,7 +86,17 @@ while True:
     # MOVIMENTAÇÃO
     # ====================
 
-    player.mover()
+    # Posição antiga do jogador
+    x_antigo = player.x
+    y_antigo = player.y
+
+    player.mover() # Função
+
+    # Colisão
+    player_rect = pygame.Rect(player.x, player.y, 96, 96)
+    if player_rect.colliderect(casa_rect):
+        player.x = x_antigo
+        player.y = y_antigo
 
     # ====================
     # LIMITES DO MAPA
@@ -141,5 +158,14 @@ while True:
             player.y - camera_y
         )
     )
+
+    # Casa
+    tela.blit(
+    casa_img,
+    (
+        casa_x - camera_x,
+        casa_y - camera_y
+    )
+)
 
     pygame.display.update()
