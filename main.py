@@ -10,6 +10,7 @@ from src.player import Jogador # Classe jogador
 from src.mapa import gerar_mapa # Função para gerar mapa
 from src.camera import atualizar_camera # Câmera
 from src.config import * # Configurações
+from src.npc import NPC # NPC
 
 pygame.init()
 
@@ -37,7 +38,8 @@ tiles = [
     pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/ma_piso5.png'), (TILE_SIZE, TILE_SIZE)),
     pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/ma_piso6.png'), (TILE_SIZE, TILE_SIZE)),
     pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/ma_piso7.png'), (TILE_SIZE, TILE_SIZE)),
-    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/ma_piso8.png'), (TILE_SIZE, TILE_SIZE))
+    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/ma_piso8.png'), (TILE_SIZE, TILE_SIZE)),
+    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/aguaCidade.png'), (TILE_SIZE, TILE_SIZE))
 ]
 
 # ====================
@@ -63,6 +65,17 @@ casa_rect = pygame.Rect(casa_x, casa_y, 512, 512)
 player = Jogador()
 player.x = mapa_lar // 2
 player.y = mapa_alt // 2
+
+# ====================
+# NPC
+# ====================
+
+from src.npc import NPC
+
+npcs = [
+    NPC("assets/images/personagens/capivara/capivara_frente1.png", 3200, 3200),
+    NPC("assets/images/personagens/arara_azul/arara_azul_frente1.png", 512, 512)
+]
 
 # ====================
 # LOOP PRINCIPAL
@@ -133,7 +146,7 @@ while True:
 
     tela.fill((0, 0, 0))
 
-    # Mapa
+    # ===== MAPA =====
     for linha in range(MAPA_LINHAS):
 
         for coluna in range(MAPA_COLUNAS):
@@ -150,7 +163,7 @@ while True:
                 (x - camera_x, y - camera_y)
             )
 
-    # Jogador
+    # ===== JOGADOR =====
     tela.blit(
         player.sprite,
         (
@@ -159,7 +172,11 @@ while True:
         )
     )
 
-    # Casa
+    # ===== NPC =====
+    for npc in npcs:
+        npc.desenhar(tela, camera_x, camera_y)
+
+    # ===== CASA =====
     tela.blit(
     casa_img,
     (
