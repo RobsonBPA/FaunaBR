@@ -1,11 +1,16 @@
 import pygame
 
 class NPC:
-    def __init__(self, imagem, x, y):
-        self.imagem = pygame.transform.scale(pygame.image.load(imagem).convert_alpha(), (96, 96))
-        
+    def __init__(self, nome, imagem, x, y, dialogos):
+        self.nome = nome
+        self.imagem = pygame.transform.scale(
+            pygame.image.load(imagem).convert_alpha(),
+            (96, 96)
+        )
+
         self.x = x
         self.y = y
+        self.dialogos = dialogos
     
     def desenhar(self, tela, camera_x, camera_y):
         tela.blit(

@@ -7,9 +7,8 @@ def gerar_mapa(colunas, linhas):
         nova_linha = []
         
         for coluna in range(colunas):
-
-            if linha >= linhas - 4:
-                tile = 8
+            if linha >= linhas - 5:
+                tile = 9
             else:
                 tile = random.choices(
                     population=[0,1,2,3,4,5,6,7], # Tiles existentes

@@ -39,7 +39,11 @@ tiles = [
     pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/ma_piso6.png'), (TILE_SIZE, TILE_SIZE)),
     pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/ma_piso7.png'), (TILE_SIZE, TILE_SIZE)),
     pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/ma_piso8.png'), (TILE_SIZE, TILE_SIZE)),
-    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/aguaCidade.png'), (TILE_SIZE, TILE_SIZE))
+    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/agua_areia1.jpeg'), (TILE_SIZE, TILE_SIZE)),
+    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/agua1.jpeg'), (TILE_SIZE, TILE_SIZE)),
+    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/agua2.jpeg'), (TILE_SIZE, TILE_SIZE)),
+    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/agua3.jpeg'), (TILE_SIZE, TILE_SIZE)),
+    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/agua4.jpeg'), (TILE_SIZE, TILE_SIZE)),
 ]
 
 # ====================
@@ -72,10 +76,27 @@ player.y = mapa_alt // 2
 
 from src.npc import NPC
 
+# ===== Mensagens do Diálogo =====
 npcs = [
-    NPC("assets/images/personagens/capivara/capivara_frente1.png", 3200, 3200),
-    NPC("assets/images/personagens/arara_azul/arara_azul_frente1.png", 512, 512)
+    NPC(
+        # Capivara
+        "Capivara",
+        "assets/images/personagens/capivara/capivara_frente1.png", 3200, 3200,
+        [
+            "Ola! Eu sou uma capivara.",
+            "Sou o maior roedor do mundo.",
+            "Gosto de viver perto da agua.",
+            "No Brasil, posso ser encontrada em varios biomas."
+        ]
+    )
 ]
+
+# ===== Configurações dos Diálogos =====
+fonte_dialogo = pygame.font.Font(None, 36)
+
+dialogo_ativo = False
+npc_atual = None
+fala_atual = 0
 
 # ====================
 # LOOP PRINCIPAL
@@ -95,6 +116,31 @@ while True:
             pygame.quit()
             exit()
 
+        # ===================
+        # DIÁLOGO
+        # ====================
+        if event.type == KEYDOWN:
+            if event.key == K_e:
+                if dialogo_ativo:
+                    fala_atual += 1
+
+                    if fala_atual >= len(npc_atual.dialogos):
+                        dialogo_ativo = False
+                        npc_atual = None
+                        fala_atual = 0
+
+                else:
+                    player_rect = pygame.Rect(player.x, player.y, 96, 96)
+
+                    for npc in npcs:
+                        area_interacao = npc.get_rect().inflate(80, 80)
+
+                        if player_rect.colliderect(area_interacao):
+                            dialogo_ativo = True
+                            npc_atual = npc
+                            fala_atual = 0
+                            break
+
     # ====================
     # MOVIMENTAÇÃO
     # ====================
@@ -103,7 +149,8 @@ while True:
     x_antigo = player.x
     y_antigo = player.y
 
-    player.mover() # Função
+    if not dialogo_ativo:
+        player.mover()
 
     # Colisão
     player_rect = pygame.Rect(player.x, player.y, 96, 96)
@@ -172,7 +219,7 @@ while True:
         )
     )
 
-    # ===== NPC =====
+    # ===== Geração dos NPCs =====
     for npc in npcs:
         npc.desenhar(tela, camera_x, camera_y)
 
@@ -184,5 +231,22 @@ while True:
         casa_y - camera_y
     )
 )
+
+    # ===== Geração do Diálogo =====
+    if dialogo_ativo and npc_atual is not None:
+        caixa = pygame.Rect(80, TELA_ALT - 180, TELA_LAR - 160, 130)
+
+        pygame.draw.rect(tela, (20, 20, 20), caixa)
+        pygame.draw.rect(tela, (255, 255, 255), caixa, 4)
+
+        nome_texto = fonte_dialogo.render(npc_atual.nome, True, (255, 255, 0))
+        fala_texto = fonte_dialogo.render(
+            npc_atual.dialogos[fala_atual],
+            True,
+            (255, 255, 255)
+        )
+
+        tela.blit(nome_texto, (caixa.x + 25, caixa.y + 20))
+        tela.blit(fala_texto, (caixa.x + 25, caixa.y + 65))
 
     pygame.display.update()

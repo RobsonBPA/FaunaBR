@@ -6,55 +6,92 @@ class Jogador:
         self.x = 0
         self.y = 0
         self.velocidade = 5
-        
-        TAMANHO_POMBO = (96, 96)
-        self.pombo_frente = pygame.transform.scale(pygame.image.load("assets/images/personagens/pombo/pombo_frente1.png").convert_alpha(), TAMANHO_POMBO), pygame.transform.scale(pygame.image.load("assets/images/personagens/pombo/pombo_frente2.png").convert_alpha(), TAMANHO_POMBO),
-        self.pombo_costas = pygame.transform.scale(pygame.image.load("assets/images/personagens/pombo/pombo_costas1.png").convert_alpha(), TAMANHO_POMBO), pygame.transform.scale(pygame.image.load("assets/images/personagens/pombo/pombo_costas2.png").convert_alpha(), TAMANHO_POMBO),
-        self.pombo_dir = pygame.transform.scale(pygame.image.load("assets/images/personagens/pombo/pombo_dir1.png").convert_alpha(), TAMANHO_POMBO), pygame.transform.scale(pygame.image.load("assets/images/personagens/pombo/pombo_dir2.png").convert_alpha(), TAMANHO_POMBO),
-        self.pombo_esq = pygame.transform.scale(pygame.image.load("assets/images/personagens/pombo/pombo_esq1.png").convert_alpha(), TAMANHO_POMBO), pygame.transform.scale(pygame.image.load("assets/images/personagens/pombo/pombo_esq2.png").convert_alpha(), TAMANHO_POMBO),
+
+        TAMANHO_PLAYER = (96, 96)
+
+        # Sprites
+        self.angelo_frente = [
+            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_frente1.png").convert_alpha(), TAMANHO_PLAYER),
+            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_frente2.png").convert_alpha(), TAMANHO_PLAYER),
+            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_frente3.png").convert_alpha(), TAMANHO_PLAYER)
+        ]
+
+        self.angelo_costas = [
+            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_costas1.png").convert_alpha(), TAMANHO_PLAYER),
+            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_costas2.png").convert_alpha(), TAMANHO_PLAYER)
+        ]
+
+        self.angelo_dir = [
+            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_dir1.png").convert_alpha(), TAMANHO_PLAYER),
+            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_dir2.png").convert_alpha(), TAMANHO_PLAYER),
+            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_dir3.png").convert_alpha(), TAMANHO_PLAYER)
+        ]
+
+        self.angelo_esq = [
+            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_esq1.png").convert_alpha(), TAMANHO_PLAYER),
+            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_esq2.png").convert_alpha(), TAMANHO_PLAYER),
+            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_esq3.png").convert_alpha(), TAMANHO_PLAYER)
+        ]
+
+        self.sprite_atual = self.angelo_frente
+        self.sprite = self.sprite_atual[0]
 
         self.frame = 0
         self.contador_animacao = 0
-        self.sprite_atual = self.pombo_frente
+        self.indice_animacao = 0
 
-        # self.sprite = pygame.transform.scale(
-        #     pygame.image.load("assets/images/personagens/pombo/pombo_frente1.png"), (96, 96))
-        
+        # Sequência da animação
+        self.sequencia_normal = [0, 1, 0, 1, 0, 1, 2] # Animação de frente, esquerda e direita
+        self.sequencia_costas = [0, 1] # Animação de costas
+
     def mover(self):
         teclas = pygame.key.get_pressed()
         movendo = False
 
-        # Subir
+        # Frente
         if teclas[K_w] or teclas[K_UP]:
             self.y -= self.velocidade
-            self.sprite_atual = self.pombo_costas
+            self.sprite_atual = self.angelo_costas
             movendo = True
 
-        # Descer
+        # Trás
         if teclas[K_s] or teclas[K_DOWN]:
             self.y += self.velocidade
-            self.sprite_atual = self.pombo_frente
+            self.sprite_atual = self.angelo_frente
             movendo = True
 
-        # Esquerda
         if teclas[K_a] or teclas[K_LEFT]:
             self.x -= self.velocidade
-            self.sprite_atual = self.pombo_esq
+            self.sprite_atual = self.angelo_esq
             movendo = True
-        
+
         # Direita
         if teclas[K_d] or teclas[K_RIGHT]:
             self.x += self.velocidade
-            self.sprite_atual = self.pombo_dir
+            self.sprite_atual = self.angelo_dir
             movendo = True
+
+        # Esquerda
+        if self.sprite_atual == self.angelo_costas:
+            sequencia = self.sequencia_costas
+        else:
+            sequencia = self.sequencia_normal
 
         if movendo:
             self.contador_animacao += 1
 
-            if self.contador_animacao >= 15:  # velocidade da animação
+            if self.contador_animacao >= 10:
                 self.contador_animacao = 0
-                self.frame = (self.frame + 1) % 2
+
+                self.indice_animacao += 1
+
+                if self.indice_animacao >= len(sequencia):
+                    self.indice_animacao = 0
+
+                self.frame = sequencia[self.indice_animacao]
         else:
-            frame = 0  # parado mostra a imagem 1
-            
+            self.frame = 0
+            self.indice_animacao = 0
+            self.contador_animacao = 0
+
         self.sprite = self.sprite_atual[self.frame]
