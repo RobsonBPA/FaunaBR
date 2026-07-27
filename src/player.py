@@ -33,8 +33,16 @@ class Jogador:
             pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_esq3.png").convert_alpha(), TAMANHO_PLAYER)
         ]
 
+        self.angelo_parado = {
+            "frente": pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_parado_frente.png").convert_alpha(), TAMANHO_PLAYER),
+            "costas": pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_parado_costas.png").convert_alpha(), TAMANHO_PLAYER),
+            "direita": pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_parado_dir.png").convert_alpha(), TAMANHO_PLAYER),
+            "esquerda": pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_parado_esq.png").convert_alpha(), TAMANHO_PLAYER)
+        }
+
         self.sprite_atual = self.angelo_frente
-        self.sprite = self.sprite_atual[0]
+        self.direcao_atual = "frente"
+        self.sprite = self.angelo_parado[self.direcao_atual]
 
         self.frame = 0
         self.contador_animacao = 0
@@ -52,23 +60,27 @@ class Jogador:
         if teclas[K_w] or teclas[K_UP]:
             self.y -= self.velocidade
             self.sprite_atual = self.angelo_costas
+            self.direcao_atual = "costas"
             movendo = True
 
         # Trás
         if teclas[K_s] or teclas[K_DOWN]:
             self.y += self.velocidade
             self.sprite_atual = self.angelo_frente
+            self.direcao_atual = "frente"
             movendo = True
 
         if teclas[K_a] or teclas[K_LEFT]:
             self.x -= self.velocidade
             self.sprite_atual = self.angelo_esq
+            self.direcao_atual = "esquerda"
             movendo = True
 
         # Direita
         if teclas[K_d] or teclas[K_RIGHT]:
             self.x += self.velocidade
             self.sprite_atual = self.angelo_dir
+            self.direcao_atual = "direita"
             movendo = True
 
         # Esquerda
@@ -93,5 +105,7 @@ class Jogador:
             self.frame = 0
             self.indice_animacao = 0
             self.contador_animacao = 0
+            self.sprite = self.angelo_parado[self.direcao_atual]
+            return
 
         self.sprite = self.sprite_atual[self.frame]
