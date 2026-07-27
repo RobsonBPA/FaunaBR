@@ -6,11 +6,12 @@ import pygame
 from pygame.locals import *
 from sys import exit
 
-from src.player import Jogador # Classe jogador
-from src.mapa import gerar_mapa # Função para gerar mapa
-from src.camera import atualizar_camera # Câmera
-from src.config import * # Configurações
-from src.npc import NPC # NPC
+from pytmx.util_pygame import load_pygame
+
+from src.player import Jogador
+from src.camera import atualizar_camera
+from src.config import *
+from src.npc import NPC
 
 pygame.init()
 
@@ -18,45 +19,45 @@ pygame.init()
 # CONFIGURAÇÕES
 # ====================
 
-# ===== Tela =====
 tela = pygame.display.set_mode((TELA_LAR, TELA_ALT))
-pygame.display.set_caption("FaunaBR") # Nome da janela
+pygame.display.set_caption("FaunaBR")
 
-clock = pygame.time.Clock() # Tempo do jogo
-
-# ====================
-# TILES
-# ====================
-
-# Carregamento dos tiles
-tiles = [
-    # Mata Atlântica
-    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/ma_piso1.png'), (TILE_SIZE, TILE_SIZE)),
-    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/ma_piso2.png'), (TILE_SIZE, TILE_SIZE)),
-    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/ma_piso3.png'), (TILE_SIZE, TILE_SIZE)),
-    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/ma_piso4.png'), (TILE_SIZE, TILE_SIZE)),
-    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/ma_piso5.png'), (TILE_SIZE, TILE_SIZE)),
-    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/ma_piso6.png'), (TILE_SIZE, TILE_SIZE)),
-    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/ma_piso7.png'), (TILE_SIZE, TILE_SIZE)),
-    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/ma_piso8.png'), (TILE_SIZE, TILE_SIZE)),
-    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/agua_areia1.jpeg'), (TILE_SIZE, TILE_SIZE)),
-    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/agua1.jpeg'), (TILE_SIZE, TILE_SIZE)),
-    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/agua2.jpeg'), (TILE_SIZE, TILE_SIZE)),
-    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/agua3.jpeg'), (TILE_SIZE, TILE_SIZE)),
-    pygame.transform.scale(pygame.image.load('assets/images/tiles/mata_atlantica/agua4.jpeg'), (TILE_SIZE, TILE_SIZE)),
-]
+clock = pygame.time.Clock()
 
 # ====================
-# MAPA
+# MAPA TILED
 # ====================
 
-mapa_lar = MAPA_COLUNAS * TILE_SIZE
-mapa_alt = MAPA_LINHAS * TILE_SIZE
+mata_atlantica = load_pygame("assets/images/maps/mata_atlantica.tmx")
 
-mapa = gerar_mapa(MAPA_COLUNAS, MAPA_LINHAS)
+mapa_lar = mata_atlantica.width * TILE_SIZE
+mapa_alt = mata_atlantica.height * TILE_SIZE
 
-# ======= CASA =======
-casa_img = pygame.transform.scale(pygame.image.load("assets/images/construcoes/casa.png").convert_alpha(), (512, 512))
+tile_cache = {}
+
+def obter_tile(gid):
+    if gid not in tile_cache:
+        imagem = mata_atlantica.get_tile_image_by_gid(gid)
+
+        if imagem is None:
+            tile_cache[gid] = None
+        else:
+            tile_cache[gid] = pygame.transform.scale(
+                imagem,
+                (TILE_SIZE, TILE_SIZE)
+            )
+
+    return tile_cache[gid]
+
+# ====================
+# CASA
+# ====================
+
+casa_img = pygame.transform.scale(
+    pygame.image.load("assets/images/construcoes/casa.png").convert_alpha(),
+    (512, 512)
+)
+
 casa_x = mapa_lar // 2 + 200
 casa_y = mapa_alt // 2
 
@@ -71,17 +72,15 @@ player.x = mapa_lar // 2
 player.y = mapa_alt // 2
 
 # ====================
-# NPC
+# NPCs
 # ====================
 
-from src.npc import NPC
-
-# ===== Mensagens do Diálogo =====
 npcs = [
     NPC(
-        # Capivara
         "Capivara",
-        "assets/images/personagens/capivara/capivara_frente1.png", 3200, 3200,
+        "assets/images/personagens/capivara/capivara_frente1.png",
+        3200,
+        3200,
         [
             "Ola! Eu sou uma capivara.",
             "Sou o maior roedor do mundo.",
@@ -91,7 +90,10 @@ npcs = [
     )
 ]
 
-# ===== Configurações dos Diálogos =====
+# ====================
+# DIÁLOGO
+# ====================
+
 fonte_dialogo = pygame.font.Font(None, 36)
 
 dialogo_ativo = False
@@ -103,7 +105,6 @@ fala_atual = 0
 # ====================
 
 while True:
-
     clock.tick(60)
 
     # ====================
@@ -111,14 +112,10 @@ while True:
     # ====================
 
     for event in pygame.event.get():
-
         if event.type == QUIT:
             pygame.quit()
             exit()
 
-        # ===================
-        # DIÁLOGO
-        # ====================
         if event.type == KEYDOWN:
             if event.key == K_e:
                 if dialogo_ativo:
@@ -145,15 +142,18 @@ while True:
     # MOVIMENTAÇÃO
     # ====================
 
-    # Posição antiga do jogador
     x_antigo = player.x
     y_antigo = player.y
 
     if not dialogo_ativo:
         player.mover()
 
-    # Colisão
+    # ====================
+    # COLISÃO
+    # ====================
+
     player_rect = pygame.Rect(player.x, player.y, 96, 96)
+
     if player_rect.colliderect(casa_rect):
         player.x = x_antigo
         player.y = y_antigo
@@ -194,21 +194,32 @@ while True:
     tela.fill((0, 0, 0))
 
     # ===== MAPA =====
-    for linha in range(MAPA_LINHAS):
+    for layer in mata_atlantica.visible_layers:
+        if hasattr(layer, "data"):
+            for x, y, gid in layer:
+                tile = obter_tile(gid)
 
-        for coluna in range(MAPA_COLUNAS):
+                if tile:
+                    tela.blit(
+                        tile,
+                        (
+                            x * TILE_SIZE - camera_x,
+                            y * TILE_SIZE - camera_y
+                        )
+                    )
 
-            tile_id = mapa[linha][coluna]
+    # ===== CASA =====
+    tela.blit(
+        casa_img,
+        (
+            casa_x - camera_x,
+            casa_y - camera_y
+        )
+    )
 
-            tile = tiles[tile_id]
-
-            x = coluna * TILE_SIZE
-            y = linha * TILE_SIZE
-
-            tela.blit(
-                tile,
-                (x - camera_x, y - camera_y)
-            )
+    # ===== NPCs =====
+    for npc in npcs:
+        npc.desenhar(tela, camera_x, camera_y)
 
     # ===== JOGADOR =====
     tela.blit(
@@ -219,27 +230,19 @@ while True:
         )
     )
 
-    # ===== Geração dos NPCs =====
-    for npc in npcs:
-        npc.desenhar(tela, camera_x, camera_y)
-
-    # ===== CASA =====
-    tela.blit(
-    casa_img,
-    (
-        casa_x - camera_x,
-        casa_y - camera_y
-    )
-)
-
-    # ===== Geração do Diálogo =====
+    # ===== DIÁLOGO =====
     if dialogo_ativo and npc_atual is not None:
         caixa = pygame.Rect(80, TELA_ALT - 180, TELA_LAR - 160, 130)
 
         pygame.draw.rect(tela, (20, 20, 20), caixa)
         pygame.draw.rect(tela, (255, 255, 255), caixa, 4)
 
-        nome_texto = fonte_dialogo.render(npc_atual.nome, True, (255, 255, 0))
+        nome_texto = fonte_dialogo.render(
+            npc_atual.nome,
+            True,
+            (255, 255, 0)
+        )
+
         fala_texto = fonte_dialogo.render(
             npc_atual.dialogos[fala_atual],
             True,
