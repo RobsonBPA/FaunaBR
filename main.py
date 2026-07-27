@@ -79,15 +79,54 @@ npcs = [
     NPC(
         "Capivara",
         "assets/images/personagens/capivara/capivara_frente1.png",
-        3200,
-        3200,
+        450,
+        3400,
         [
             "Ola! Eu sou uma capivara.",
             "Sou o maior roedor do mundo.",
             "Gosto de viver perto da agua.",
             "No Brasil, posso ser encontrada em varios biomas."
         ]
-    )
+    ),
+
+    NPC(
+        "Pombo",
+        "assets/images/personagens/pombo/pombo_frente1.png",
+        3000,
+        3000,
+        [
+            "Fala 1",
+            "Fala 2",
+            "Fala 3",
+            "Fala 4"
+        ]
+    ),
+
+    NPC(
+        "Escorpião",
+        "assets/images/personagens/escorpiao/escorpiao_frente1.png",
+        350,
+        550,
+        [
+            "Fala 1",
+            "Fala 2",
+            "Fala 3",
+            "Fala 4"
+        ]
+    ),
+
+    NPC(
+        "Cachorro",
+        "assets/images/personagens/cachorro/cachorro1.png",
+        400,
+        400,
+        [
+            "Fala 1",
+            "Fala 2",
+            "Fala 3",
+            "Fala 4"
+        ]
+    ),
 ]
 
 # ====================
