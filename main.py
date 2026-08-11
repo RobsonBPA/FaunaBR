@@ -55,13 +55,13 @@ def obter_tile(gid):
 
 casa_img = pygame.transform.scale(
     pygame.image.load("assets/images/construcoes/casa.png").convert_alpha(),
-    (512, 512)
+    (384, 384)
 )
 
 casa_x = mapa_lar // 2 + 200
 casa_y = mapa_alt // 2
 
-casa_rect = pygame.Rect(casa_x, casa_y, 512, 512)
+casa_rect = pygame.Rect(casa_x, casa_y, 372, 372)
 
 # ====================
 # JOGADOR
