@@ -233,19 +233,21 @@ while True:
     tela.fill((0, 0, 0))
 
     # ===== MAPA =====
+    coluna_inicial = camera_x // TILE_SIZE
+    coluna_final = (camera_x + TELA_LAR) // TILE_SIZE + 1
+
+    linha_inicial = camera_y // TILE_SIZE
+    linha_final = (camera_y + TELA_ALT) // TILE_SIZE + 1
+
     for layer in mata_atlantica.visible_layers:
         if hasattr(layer, "data"):
-            for x, y, gid in layer:
-                tile = obter_tile(gid)
+            for y in range(linha_inicial, linha_final):
+                for x in range(coluna_inicial, coluna_final):
+                    gid = layer.data[y][x]
+                    tile = obter_tile(gid)
 
-                if tile:
-                    tela.blit(
-                        tile,
-                        (
-                            x * TILE_SIZE - camera_x,
-                            y * TILE_SIZE - camera_y
-                        )
-                    )
+                    if tile:
+                        tela.blit(tile, (x * TILE_SIZE - camera_x, y * TILE_SIZE - camera_y))
 
     # ===== CASA =====
     tela.blit(

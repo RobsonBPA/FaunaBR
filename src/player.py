@@ -1,6 +1,12 @@
 import pygame
 from pygame.locals import *
 
+def carregar_sprite(caminho, tamanho):
+    return pygame.transform.scale(
+        pygame.image.load(caminho).convert_alpha(),
+        tamanho
+    )
+
 class Jogador:
     def __init__(self):
         self.x = 0
@@ -11,26 +17,26 @@ class Jogador:
 
         # Sprites
         self.angelo_frente = [
-            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_frente1.png").convert_alpha(), TAMANHO_PLAYER),
-            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_frente2.png").convert_alpha(), TAMANHO_PLAYER),
-            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_frente3.png").convert_alpha(), TAMANHO_PLAYER)
+            carregar_sprite("assets/images/personagens/angelo/angelo_frente1.png", TAMANHO_PLAYER),
+            carregar_sprite("assets/images/personagens/angelo/angelo_frente2.png", TAMANHO_PLAYER),
+            carregar_sprite("assets/images/personagens/angelo/angelo_frente3.png", TAMANHO_PLAYER),
         ]
 
         self.angelo_costas = [
-            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_costas1.png").convert_alpha(), TAMANHO_PLAYER),
-            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_costas2.png").convert_alpha(), TAMANHO_PLAYER)
+            carregar_sprite("assets/images/personagens/angelo/angelo_costas1.png", TAMANHO_PLAYER),
+            carregar_sprite("assets/images/personagens/angelo/angelo_costas2.png", TAMANHO_PLAYER)
         ]
 
         self.angelo_dir = [
-            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_dir1.png").convert_alpha(), TAMANHO_PLAYER),
-            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_dir2.png").convert_alpha(), TAMANHO_PLAYER),
-            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_dir3.png").convert_alpha(), TAMANHO_PLAYER)
+            carregar_sprite("assets/images/personagens/angelo/angelo_dir1.png", TAMANHO_PLAYER),
+            carregar_sprite("assets/images/personagens/angelo/angelo_dir2.png", TAMANHO_PLAYER),
+            carregar_sprite("assets/images/personagens/angelo/angelo_dir3.png", TAMANHO_PLAYER)
         ]
 
         self.angelo_esq = [
-            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_esq1.png").convert_alpha(), TAMANHO_PLAYER),
-            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_esq2.png").convert_alpha(), TAMANHO_PLAYER),
-            pygame.transform.scale(pygame.image.load("assets/images/personagens/angelo/angelo_esq3.png").convert_alpha(), TAMANHO_PLAYER)
+            carregar_sprite("assets/images/personagens/angelo/angelo_esq1.png", TAMANHO_PLAYER),
+            carregar_sprite("assets/images/personagens/angelo/angelo_esq2.png", TAMANHO_PLAYER),
+            carregar_sprite("assets/images/personagens/angelo/angelo_esq3.png", TAMANHO_PLAYER)
         ]
 
         self.angelo_parado = {
@@ -88,6 +94,15 @@ class Jogador:
             sequencia = self.sequencia_costas
         else:
             sequencia = self.sequencia_normal
+        
+        if self.sprite_atual == self.angelo_costas:
+            sequencia = self.sequencia_costas
+        else:
+            sequencia = self.sequencia_normal
+
+        if self.frame >= len(self.sprite_atual):
+            self.frame = 0
+            self.indice_animacao = 0
 
         if movendo:
             self.contador_animacao += 1

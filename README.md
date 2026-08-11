@@ -21,7 +21,10 @@ Este projeto TCC (Trabalho de Conclusão de Curso) desenvolvido em Python com a 
 This undergraduate thesis project, developed in Python using the Pygame library, aims to be a game to raise awareness about Brazilian animals.
 
 ## Imagem do Projeto / Project Image (02/06/2026)
-<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/a749dcb7-b80e-4e69-8f7b-ed974af362df" />
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/a749dcb7-b80e-4e69-8f7b-ed974af362df"/>
 
 ## Imagem do Projeto / Project Image (22/06/2026)
-<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/cf269d70-7cbf-47fa-902f-1dc3d60a93b5" />
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/cf269d70-7cbf-47fa-902f-1dc3d60a93b5"/>
+
+## Imagem do Projeto / Project Image (28/07/2026)
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/3bfe9096-c577-4d1d-82cf-141148d0f843"/>
