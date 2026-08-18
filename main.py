@@ -2,10 +2,22 @@
 # IMPORTAÇÕES
 # ====================
 
+import os
+import sys
+
+def resource_path(relative_path):
+    if getattr(sys, "frozen", False):
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 import pygame
 from pygame.locals import *
 from sys import exit
 
+import pytmx
 from pytmx.util_pygame import load_pygame
 
 from src.player import Jogador
@@ -28,7 +40,11 @@ clock = pygame.time.Clock()
 # MAPA TILED
 # ====================
 
-mata_atlantica = load_pygame("assets/images/maps/mata_atlantica.tmx")
+mata_atlantica = pytmx.util_pygame.load_pygame(
+    resource_path("assets/images/maps/mata_atlantica.tmx")
+)
+
+#mata_atlantica = load_pygame("assets/images/maps/mata_atlantica.tmx")
 
 mapa_lar = mata_atlantica.width * TILE_SIZE
 mapa_alt = mata_atlantica.height * TILE_SIZE
@@ -54,7 +70,9 @@ def obter_tile(gid):
 # ====================
 
 casa_img = pygame.transform.scale(
-    pygame.image.load("assets/images/construcoes/casa.png").convert_alpha(),
+    pygame.image.load(
+        resource_path("assets/images/construcoes/casa.png")
+    ).convert_alpha(),
     (384, 384)
 )
 
@@ -78,7 +96,7 @@ player.y = mapa_alt // 2
 npcs = [
     NPC(
         "Capivara",
-        "assets/images/personagens/capivara/capivara_frente1.png",
+        resource_path("assets/images/personagens/capivara/capivara_frente1.png"),
         450,
         3400,
         [
@@ -91,7 +109,7 @@ npcs = [
 
     NPC(
         "Pombo",
-        "assets/images/personagens/pombo/pombo_frente1.png",
+        resource_path("assets/images/personagens/pombo/pombo_frente1.png"),
         3000,
         3000,
         [
@@ -104,7 +122,7 @@ npcs = [
 
     NPC(
         "Escorpião",
-        "assets/images/personagens/escorpiao/escorpiao_frente1.png",
+        resource_path("assets/images/personagens/escorpiao/escorpiao_frente1.png"),
         350,
         550,
         [
@@ -117,7 +135,7 @@ npcs = [
 
     NPC(
         "Cachorro",
-        "assets/images/personagens/cachorro/cachorro1.png",
+        resource_path("assets/images/personagens/cachorro/cachorro1.png"),
         400,
         400,
         [
@@ -238,6 +256,12 @@ while True:
 
     linha_inicial = camera_y // TILE_SIZE
     linha_final = (camera_y + TELA_ALT) // TILE_SIZE + 1
+
+    coluna_inicial = max(0, coluna_inicial)
+    linha_inicial = max(0, linha_inicial)
+
+    coluna_final = min(mata_atlantica.width, coluna_final)
+    linha_final = min(mata_atlantica.height, linha_final)
 
     for layer in mata_atlantica.visible_layers:
         if hasattr(layer, "data"):
