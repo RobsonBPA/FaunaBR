@@ -108,7 +108,7 @@ npcs = [
     ),
 
     NPC(
-        "Pombo",
+        "Pombo Beiçudo",
         resource_path("assets/images/personagens/pombo/pombo_frente1.png"),
         3000,
         3000,
