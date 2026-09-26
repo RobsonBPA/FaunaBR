@@ -1,9 +1,0 @@
-import pygame
-
-TELA_LAR = 1366
-TELA_ALT = 768
-
-TILE_SIZE = 96
-
-MAPA_COLUNAS = 50
-MAPA_LINHAS = 50
