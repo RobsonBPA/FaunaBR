@@ -25,6 +25,12 @@ class Jogador:
         self.x = 0
         self.y = 0
         self.velocidade = 5
+        self.som_passos = pygame.mixer.Sound(
+            resource_path("assets/sounds/personagem/passos.mp3")
+        )
+        self.canal_passos = None
+        self.intervalo_passos = 350
+        self.ultimo_passo = 0
 
         TAMANHO_PLAYER = (96, 96)
 
@@ -165,6 +171,12 @@ class Jogador:
             self.indice_animacao = 0
 
         if movendo:
+            agora = pygame.time.get_ticks()
+            if agora - self.ultimo_passo >= self.intervalo_passos:
+                if self.canal_passos is None or not self.canal_passos.get_busy():
+                    self.canal_passos = self.som_passos.play()
+                self.ultimo_passo = agora
+
             self.contador_animacao += 1
 
             if self.contador_animacao >= 10:
@@ -178,6 +190,7 @@ class Jogador:
                 self.frame = sequencia[self.indice_animacao]
 
         else:
+            self.parar_passos()
             self.frame = 0
             self.indice_animacao = 0
             self.contador_animacao = 0
@@ -185,3 +198,9 @@ class Jogador:
             return
 
         self.sprite = self.sprite_atual[self.frame]
+
+    def parar_passos(self):
+        if self.canal_passos is not None:
+            self.canal_passos.stop()
+            self.canal_passos = None
+        self.ultimo_passo = 0

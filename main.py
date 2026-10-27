@@ -90,12 +90,14 @@ PLAYER_TAMANHO = 96
 # SOM
 # ====================
 
+
 pygame.mixer.music.load(
     resource_path(
         "assets/sounds/ambiente/trilha_sonora.mp3"
     )
 )
 
+pygame.mixer.music.set_volume(0.3)
 pygame.mixer.music.play(-1)
 
 
@@ -406,6 +408,8 @@ while True:
 
     if not dialogo_ativo:
         player.mover()
+    else:
+        player.parar_passos()
 
 
     # ====================
