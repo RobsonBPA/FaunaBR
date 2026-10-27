@@ -37,6 +37,30 @@ Este projeto TCC (Trabalho de Conclusão de Curso) desenvolvido em Python com a 
 ## Objectives
 This undergraduate thesis project, developed in Python using the Pygame library, aims to be a game to raise awareness about Brazilian animals.
 
+## Executar o jogo
+
+Requisitos: Python 3.10 ou superior, Pygame CE 2.x e PyTMX 3.x.
+
+```powershell
+py -m pip install -r requirements.txt
+py main.py
+```
+
+O jogo deve ser iniciado a partir da pasta do projeto. Os recursos são localizados
+em relação ao próprio projeto no modo de desenvolvimento e a partir da pasta
+temporária do PyInstaller no executável.
+
+## Gerar executável para Windows
+
+Instale o PyInstaller e empacote o jogo com os recursos:
+
+```powershell
+py -m pip install pyinstaller
+py -m PyInstaller --noconfirm --onefile --windowed --name FaunaBR --add-data "assets;assets" --hidden-import pytmx.util_pygame main.py
+```
+
+O executável será criado em `dist/FaunaBR.exe`.
+
 
 ## Imagens do Projeto / Project Images
 

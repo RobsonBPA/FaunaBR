@@ -1,30 +1,18 @@
-import os
-import sys
 import pygame
-from pygame.locals import *
+from pygame.locals import K_a, K_d, K_s, K_w, K_DOWN, K_LEFT, K_RIGHT, K_UP
 
-
-def resource_path(relative_path):
-    if getattr(sys, "frozen", False):
-        base_path = sys._MEIPASS
-    else:
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relative_path)
-
-
-def carregar_sprite(caminho, tamanho):
-    return pygame.transform.scale(
-        pygame.image.load(resource_path(caminho)).convert_alpha(),
-        tamanho
-    )
+from src.config import PLAYER_TAMANHO, VELOCIDADE_JOGADOR
+from src.recursos import carregar_sprite, resource_path
 
 
 class Jogador:
     def __init__(self):
         self.x = 0
         self.y = 0
-        self.velocidade = 5
+        self.velocidade = VELOCIDADE_JOGADOR
+        self.rect = pygame.Rect(0, 0, PLAYER_TAMANHO, PLAYER_TAMANHO)
+        self._resto_x = 0.0
+        self._resto_y = 0.0
         self.som_passos = pygame.mixer.Sound(
             resource_path("assets/sounds/personagem/passos.mp3")
         )
@@ -32,7 +20,7 @@ class Jogador:
         self.intervalo_passos = 350
         self.ultimo_passo = 0
 
-        TAMANHO_PLAYER = (96, 96)
+        TAMANHO_PLAYER = (PLAYER_TAMANHO, PLAYER_TAMANHO)
 
         # Sprites - Frente
         self.angelo_frente = [
@@ -129,37 +117,43 @@ class Jogador:
         self.sequencia_normal = [0, 1, 0, 1, 0, 1, 2]
         self.sequencia_costas = [0, 1]
 
-    def mover(self):
+    def mover(self, dt=1 / 60):
         teclas = pygame.key.get_pressed()
         movendo = False
+        deslocamento = self.velocidade * dt
+        deslocamento_x = 0.0
+        deslocamento_y = 0.0
 
         # Frente
         if teclas[K_w] or teclas[K_UP]:
-            self.y -= self.velocidade
+            deslocamento_y -= deslocamento
             self.sprite_atual = self.angelo_costas
             self.direcao_atual = "costas"
             movendo = True
 
         # Trás
         if teclas[K_s] or teclas[K_DOWN]:
-            self.y += self.velocidade
+            deslocamento_y += deslocamento
             self.sprite_atual = self.angelo_frente
             self.direcao_atual = "frente"
             movendo = True
 
         # Esquerda
         if teclas[K_a] or teclas[K_LEFT]:
-            self.x -= self.velocidade
+            deslocamento_x -= deslocamento
             self.sprite_atual = self.angelo_esq
             self.direcao_atual = "esquerda"
             movendo = True
 
         # Direita
         if teclas[K_d] or teclas[K_RIGHT]:
-            self.x += self.velocidade
+            deslocamento_x += deslocamento
             self.sprite_atual = self.angelo_dir
             self.direcao_atual = "direita"
             movendo = True
+
+        self._mover_eixo("x", deslocamento_x)
+        self._mover_eixo("y", deslocamento_y)
 
         if self.sprite_atual == self.angelo_costas:
             sequencia = self.sequencia_costas
@@ -177,10 +171,10 @@ class Jogador:
                     self.canal_passos = self.som_passos.play()
                 self.ultimo_passo = agora
 
-            self.contador_animacao += 1
+            self.contador_animacao += dt
 
-            if self.contador_animacao >= 10:
-                self.contador_animacao = 0
+            if self.contador_animacao >= 1 / 6:
+                self.contador_animacao -= 1 / 6
 
                 self.indice_animacao += 1
 
@@ -198,6 +192,16 @@ class Jogador:
             return
 
         self.sprite = self.sprite_atual[self.frame]
+
+    def _mover_eixo(self, eixo, deslocamento):
+        nome_resto = f"_resto_{eixo}"
+        resto = getattr(self, nome_resto) + deslocamento
+        pixels = int(resto)
+        setattr(self, nome_resto, resto - pixels)
+        setattr(self, eixo, getattr(self, eixo) + pixels)
+
+    def sincronizar_rect(self):
+        self.rect.update(self.x, self.y, PLAYER_TAMANHO, PLAYER_TAMANHO)
 
     def parar_passos(self):
         if self.canal_passos is not None:
