@@ -50,6 +50,26 @@ O jogo deve ser iniciado a partir da pasta do projeto. Os recursos são localiza
 em relação ao próprio projeto no modo de desenvolvimento e a partir da pasta
 temporária do PyInstaller no executável.
 
+### Controles e missões
+
+- **WASD ou setas:** movimentar Ângelo.
+- **E:** conversar com personagens próximos; caminhe sobre os resíduos para recolhê-los.
+- Ângelo é o único personagem jogável. As missões são liberadas em sequência:
+  Iggy (Cachorro) (visite lixão, praça e campo), Rocky (Capivara) (acompanhe até a lagoa),
+  Pombo Beiçudo (recolha seis resíduos), Scorpion (Escorpião-Amarelo) (encontre-o no lixão) e
+  Blue (Arara-Azul) (acompanhe-a da cidade até a floresta). Cada missão concluída concede
+  uma peça da Chave do Conhecimento; a campanha individual termina com cinco peças.
+- A arara-azul aparece na cidade como participação especial e deve ser conduzida à
+  região verde ao norte. O jogo não apresenta a espécie como típica da Mata Atlântica.
+- O progresso das missões existe somente durante a sessão atual e é reiniciado
+  quando o jogo é fechado. O projeto não lê nem grava arquivos de salvamento.
+
+O projeto contém somente o mapa da Mata Atlântica. O mapa atual não tem regiões
+nomeadas no arquivo TMX; os limites de lixão, praça, campo e floresta são definidos
+por coordenadas de missão em `src/missao.py`. A lagoa de água doce da missão da
+capivara é um elemento provisório desenhado sobre o mapa existente; ajuste manual
+no editor de mapas poderá substituir esse elemento por arte final.
+
 ## Gerar executável para Windows
 
 Instale o PyInstaller e empacote o jogo com os recursos:
@@ -60,6 +80,9 @@ py -m PyInstaller --noconfirm --onefile --windowed --name FaunaBR --add-data "as
 ```
 
 O executável será criado em `dist/FaunaBR.exe`.
+
+Ao concluir a última missão, `assets/sounds/CreditosFinais.mp4` é aberto uma vez
+no reprodutor padrão do sistema.
 
 
 ## Imagens do Projeto / Project Images

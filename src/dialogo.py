@@ -1,46 +1,6 @@
 import pygame
 
 
-DIALOGO_POMBO_INICIAL = [
-    "Opa... A cidade esta cheia de cacos de vidro!",
-    "Voce pode me ajudar a recolher esse lixo?",
-    "Procure os cacos de vidro espalhados pela cidade.",
-    "Volte aqui quando terminar!"
-]
-
-DIALOGO_POMBO_ANDAMENTO = [
-    "Ainda falta recolher alguns cacos.",
-    "Voce recolheu {coletado} de {total}."
-]
-
-DIALOGO_POMBO_CONCLUSAO = [
-    "Voce conseguiu!",
-    "Todos os cacos foram recolhidos!",
-    "Muito obrigado pela ajuda!"
-]
-
-DIALOGO_POMBO_FINAL = [
-    "Obrigado por limpar a cidade!",
-    "Voce ajudou a deixar a Mata Atlântica mais segura."
-]
-
-
-def atualizar_dialogo_pombo(missao_ativa, missao_concluida, lixo_coletado, total_lixos):
-    if missao_concluida:
-        return DIALOGO_POMBO_FINAL
-
-    if missao_ativa and lixo_coletado >= total_lixos:
-        return DIALOGO_POMBO_CONCLUSAO
-
-    if missao_ativa:
-        return [
-            texto.format(coletado=lixo_coletado, total=total_lixos)
-            for texto in DIALOGO_POMBO_ANDAMENTO
-        ]
-
-    return DIALOGO_POMBO_INICIAL
-
-
 class GerenciadorDialogo:
     def __init__(self):
         self.ativo = False
@@ -48,17 +8,17 @@ class GerenciadorDialogo:
         self.fala_atual = 0
         self._textos_renderizados = {}
 
-    def iniciar(self, npcs, player_rect, dialogo_pombo):
+    def iniciar(self, npcs, player_rect, dialogo_por_npc):
         for npc in npcs:
-            if player_rect.colliderect(npc.get_rect().inflate(80, 80)):
+            if npc.visivel and player_rect.colliderect(npc.get_rect().inflate(80, 80)):
                 self.ativo = True
                 self.npc_atual = npc
                 self.fala_atual = 0
 
-                if npc.nome == "Pombo Beiçudo":
-                    npc.dialogos = dialogo_pombo
+                npc.dialogos = dialogo_por_npc(npc.nome)
 
-                break
+                return True
+        return False
 
     def avancar(self):
         self.fala_atual += 1
@@ -83,13 +43,22 @@ class GerenciadorDialogo:
         nome = self._obter_texto(
             fonte, self.npc_atual.nome, (255, 255, 0)
         )
-        fala = self._obter_texto(
-            fonte,
-            self.npc_atual.dialogos[self.fala_atual],
-            (255, 255, 255)
-        )
         tela.blit(nome, (caixa.x + 25, caixa.y + 20))
-        tela.blit(fala, (caixa.x + 25, caixa.y + 65))
+        texto = self.npc_atual.dialogos[self.fala_atual]
+        linhas = []
+        atual = ""
+        for palavra in texto.split():
+            tentativa = f"{atual} {palavra}".strip()
+            if fonte.size(tentativa)[0] > caixa.width - 50 and atual:
+                linhas.append(atual)
+                atual = palavra
+            else:
+                atual = tentativa
+        if atual:
+            linhas.append(atual)
+        for indice, linha in enumerate(linhas[:2]):
+            fala = self._obter_texto(fonte, linha, (255, 255, 255))
+            tela.blit(fala, (caixa.x + 25, caixa.y + 62 + indice * 30))
 
     def _obter_texto(self, fonte, texto, cor):
         chave = (texto, cor)
